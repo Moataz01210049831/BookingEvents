@@ -1,4 +1,5 @@
 using EventBooking.Application.Common.Interfaces;
+using EventBooking.Application.Events;
 using EventBooking.Domain.Entities;
 using EventBooking.Infrastructure.Persistence;
 using EventBooking.Infrastructure.Services;
@@ -20,6 +21,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 
 });
+builder.Services.AddScoped<IApplicationDbContext>(provider =>
+    provider.GetRequiredService<ApplicationDbContext>());
 builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
@@ -44,6 +47,17 @@ builder.Services.AddAuthentication(options =>
         RoleClaimType = "roles"
     };
 });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
+    });
+});
+builder.Services.AddScoped<IEventService, EventService>();
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 var app = builder.Build();
@@ -57,6 +71,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowAngularApp");
 app.UseAuthentication();
 app.UseAuthorization();
 

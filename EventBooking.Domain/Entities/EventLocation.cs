@@ -1,5 +1,8 @@
-﻿namespace EventBooking.Domain.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace EventBooking.Domain.Entities
 {
+    [Table("EventLocation")]
     public class EventLocation
     {
         public Guid Id { get; set; }
