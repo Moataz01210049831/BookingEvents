@@ -1,3 +1,4 @@
+using EventBooking.API.Middleware;
 using EventBooking.Application.Common.Interfaces;
 using EventBooking.Application.Events;
 using EventBooking.Domain.Entities;
@@ -61,6 +62,7 @@ builder.Services.AddScoped<IEventService, EventService>();
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 var app = builder.Build();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

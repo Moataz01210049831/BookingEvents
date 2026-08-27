@@ -1,5 +1,6 @@
 ﻿using Azure.Core;
 using EventBooking.Application.Auth.DTOs;
+using EventBooking.Application.Common.Exceptions;
 using EventBooking.Application.Common.Interfaces;
 using EventBooking.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -48,13 +49,14 @@ namespace EventBooking.API.Controllers
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user is null)
             {
-                return Unauthorized("Invalid email or password");
+                throw new ValidationException("البريد الإلكتروني أو كلمة المرور غير صحيحة");
+                //return Unauthorized("Invalid email or password");
             }
 
             var isPasswordValid = await _userManager.CheckPasswordAsync(user, request.Password);
             if (!isPasswordValid)
             {
-                return Unauthorized("Invalid email or password");
+                throw new ValidationException("البريد الإلكتروني أو كلمة المرور غير صحيحة");
             }
 
             var roles = await _userManager.GetRolesAsync(user);
