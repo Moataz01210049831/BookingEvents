@@ -1,6 +1,6 @@
 ﻿namespace EventBooking.Domain.Entities
 {
-    public enum BookingStatus
+    public enum BookingStatus:byte
     {
         Pending = 0,
         Confirmed = 1,

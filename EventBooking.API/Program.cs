@@ -1,4 +1,5 @@
-using EventBooking.API.Middleware;
+﻿using EventBooking.API.Middleware;
+using EventBooking.Application.Bookings;
 using EventBooking.Application.Common.Interfaces;
 using EventBooking.Application.Events;
 using EventBooking.Domain.Entities;
@@ -8,6 +9,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,8 +18,24 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "أدخل التوكن بالشكل ده: Bearer {token}"
+    });
+
+    options.AddSecurityRequirement(document => new()
+    {
+        [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+    });
+});
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -59,7 +78,8 @@ builder.Services.AddCors(options =>
     });
 });
 builder.Services.AddScoped<IEventService, EventService>();
-
+builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddHostedService<SeatHoldExpiryService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 var app = builder.Build();
 app.UseMiddleware<ExceptionHandlingMiddleware>();

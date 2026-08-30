@@ -1,6 +1,6 @@
 ﻿namespace EventBooking.Domain.Entities
 {
-    public enum SeatType
+    public enum SeatType:byte
     {
         Regular = 0,
         VIP = 1,

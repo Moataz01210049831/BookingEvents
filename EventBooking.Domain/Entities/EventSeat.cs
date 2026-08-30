@@ -2,7 +2,7 @@
 
 namespace EventBooking.Domain.Entities
 {
-    public enum EventSeatStatus
+    public enum EventSeatStatus : byte
     {
         Available = 0,
         Held = 1,

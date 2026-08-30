@@ -20,5 +20,12 @@ namespace EventBooking.API.Controllers
             var events = await _eventService.GetAllEventsAsync();
             return Ok(events);
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetEventById(Guid id)
+        {
+            var eventDetails = await _eventService.GetEventByIdAsync(id);
+            return Ok(eventDetails);
+        }
     }
 }
