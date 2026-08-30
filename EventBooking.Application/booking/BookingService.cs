@@ -1,4 +1,5 @@
 ﻿using EventBooking.Application.booking.Dtos;
+using EventBooking.Application.Bookings.DTOs;
 using EventBooking.Application.Common.Exceptions;
 using EventBooking.Application.Common.Interfaces;
 using EventBooking.Domain.Entities;
@@ -110,5 +111,101 @@ namespace EventBooking.Application.Bookings
                 }).ToList()
             };
         }
-    }
-}
+    
+
+    public async Task<BookingResponse> ConfirmBookingAsync(Guid userId, ConfirmBookingRequest request)
+        {
+            // 1. هات الحجز مع الكراسي المرتبطة بيه
+            var booking = await _context.Bookings
+                .Include(b => b.BookingSeats)
+                    .ThenInclude(bs => bs.EventSeat)
+                        .ThenInclude(es => es.Seat)
+                .FirstOrDefaultAsync(b => b.Id == request.BookingId);
+
+            // 2. تأكد إن الحجز موجود
+            if (booking is null)
+            {
+                throw new NotFoundException("الحجز المطلوب غير موجود");
+            }
+
+            // 3. تأكد إن الحجز ده بتاع نفس اليوزر
+            if (booking.UserId != userId)
+            {
+                throw new ForbiddenException("لا يمكنك تأكيد حجز لا يخصك");
+            }
+
+            // 4. تأكد إن الحجز لسه Pending
+            if (booking.Status != BookingStatus.Pending)
+            {
+                throw new ValidationException("لا يمكن تأكيد هذا الحجز، حالته الحالية: " + booking.Status);
+            }
+
+            // 5. تأكد إن كل الكراسي لسه Held بنفس الوقت المسموح
+            var now = DateTime.UtcNow;
+            var invalidSeats = booking.BookingSeats
+                .Where(bs => bs.EventSeat.Status != EventSeatStatus.Held
+                          || bs.EventSeat.HeldByUserId != userId
+                          || bs.EventSeat.HoldExpiresAtUtc < now)
+                .ToList();
+
+            if (invalidSeats.Count > 0)
+            {
+                throw new ValidationException("انتهت مهلة حجز بعض المقاعد، من فضلك أعد المحاولة");
+            }
+
+            // 6. أكّد الحجز والكراسي
+            booking.Status = BookingStatus.Confirmed;
+
+            foreach (var bookingSeat in booking.BookingSeats)
+            {
+                bookingSeat.EventSeat.Status = EventSeatStatus.Booked;
+                bookingSeat.EventSeat.HeldByUserId = null;
+                bookingSeat.EventSeat.HoldExpiresAtUtc = null;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return new BookingResponse
+            {
+                BookingId = booking.Id,
+                Status = booking.Status.ToString(),
+                TotalAmount = booking.TotalAmount,
+                HoldExpiresAtUtc = null,
+                Seats = booking.BookingSeats.Select(bs => new BookedSeatDto
+                {
+                    EventSeatId = bs.EventSeatId,
+                    RowLabel = bs.EventSeat.Seat.RowLabel,
+                    SeatNumber = bs.EventSeat.Seat.SeatNumber,
+                    Price = bs.PriceAtBooking
+                }).ToList()
+            };
+        }
+
+        public async Task<List<MyBookingDto>> GetMyBookingsAsync(Guid userId)
+        {
+            var bookings = await _context.Bookings
+                .Where(b => b.UserId == userId)
+                .OrderByDescending(b => b.BookingDateUtc)
+                .Select(b => new MyBookingDto
+                {
+                    BookingId = b.Id,
+                    EventTitle = b.Event.Title,
+                    EventStartDateUtc = b.Event.StartDateUtc,
+                    HallName = b.Event.Hall.Name,
+                    LocationName = b.Event.Hall.Location.Name,
+                    Status = b.Status.ToString(),
+                    TotalAmount = b.TotalAmount,
+                    BookingDateUtc = b.BookingDateUtc,
+                    Seats = b.BookingSeats.Select(bs => new BookedSeatDto
+                    {
+                        EventSeatId = bs.EventSeatId,
+                        RowLabel = bs.EventSeat.Seat.RowLabel,
+                        SeatNumber = bs.EventSeat.Seat.SeatNumber,
+                        Price = bs.PriceAtBooking
+                    }).ToList()
+                })
+                .ToListAsync();
+
+            return bookings;
+        }
+    } }

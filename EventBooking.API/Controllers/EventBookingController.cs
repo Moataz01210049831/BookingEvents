@@ -1,5 +1,6 @@
 ﻿using EventBooking.Application.booking.Dtos;
 using EventBooking.Application.Bookings;
+using EventBooking.Application.Bookings.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -31,5 +32,22 @@ namespace EventBooking.API.Controllers
 
             return userId;
         }
+
+        [HttpPost("confirm")]
+        public async Task<IActionResult> ConfirmBooking(ConfirmBookingRequest request)
+        {
+            var userId = GetCurrentUserId();
+            var result = await _bookingService.ConfirmBookingAsync(userId, request);
+            return Ok(result);
+        }
+
+        [HttpGet("my-bookings")]
+        public async Task<IActionResult> GetMyBookings()
+        {
+            var userId = GetCurrentUserId();
+            var bookings = await _bookingService.GetMyBookingsAsync(userId);
+            return Ok(bookings);
+        }
     }
+
 }
