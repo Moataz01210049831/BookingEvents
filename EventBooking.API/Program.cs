@@ -4,6 +4,8 @@ using EventBooking.Application.Bookings;
 using EventBooking.Application.Categories;
 using EventBooking.Application.Common.Interfaces;
 using EventBooking.Application.Events;
+using EventBooking.Application.Halls;
+using EventBooking.Application.Locations;
 using EventBooking.Domain.Entities;
 using EventBooking.Infrastructure.Persistence;
 using EventBooking.Infrastructure.Services;
@@ -85,7 +87,8 @@ builder.Services.AddHostedService<SeatHoldExpiryService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddSingleton<IMessageService, MessageService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
-
+builder.Services.AddScoped<ILocationService, LocationService>();
+builder.Services.AddScoped<IHallService, HallService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();

@@ -9,5 +9,6 @@
   "BookingNotFound": "الحجز المطلوب غير موجود",
   "NotYourBooking": "لا يمكنك تأكيد حجز لا يخصك",
   "BookingNotPending": "لا يمكن تأكيد هذا الحجز",
-  "SeatsHoldExpired": "انتهت مهلة حجز بعض المقاعد، من فضلك أعد المحاولة"
+  "SeatsHoldExpired": "انتهت مهلة حجز بعض المقاعد، من فضلك أعد المحاولة",
+  "LocationNotFound": "المكان المحدد غير موجود"
 }

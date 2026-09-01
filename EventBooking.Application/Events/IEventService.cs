@@ -7,5 +7,8 @@ namespace EventBooking.Application.Events
     {
         Task<List<EventListItemDto>> GetAllEventsAsync();
         Task<EventDetailsDto> GetEventByIdAsync(Guid id);
+
+        Task<EventDetailsDto> CreateAsync(Guid organizerId, CreateEventRequest request);
+
     }
 }
