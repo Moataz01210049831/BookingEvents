@@ -16,7 +16,11 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.11" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.22.0" />
   </ItemGroup>
-
+	<ItemGroup>
+		<None Update="Resources\messages.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EventBooking.Application\EventBooking.Application.csproj" />
   </ItemGroup>

@@ -1,6 +1,7 @@
 ﻿using EventBooking.API.Middleware;
 using EventBooking.Application.Auth;
 using EventBooking.Application.Bookings;
+using EventBooking.Application.Categories;
 using EventBooking.Application.Common.Interfaces;
 using EventBooking.Application.Events;
 using EventBooking.Domain.Entities;
@@ -13,7 +14,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
 using System.Text;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -56,6 +56,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
+    options.MapInboundClaims = false; 
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
@@ -83,7 +84,10 @@ builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddHostedService<SeatHoldExpiryService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddSingleton<IMessageService, MessageService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+
 builder.Services.AddScoped<IAuthService, AuthService>();
+
 var app = builder.Build();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 

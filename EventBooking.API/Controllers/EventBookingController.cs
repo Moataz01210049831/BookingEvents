@@ -48,6 +48,14 @@ namespace EventBooking.API.Controllers
             var bookings = await _bookingService.GetMyBookingsAsync(userId);
             return Ok(bookings);
         }
+
+        [HttpGet("api/debug/my-claims")]
+        [Authorize]
+        public IActionResult GetMyClaims()
+        {
+            var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
+            return Ok(claims);
+        }
     }
 
 }
