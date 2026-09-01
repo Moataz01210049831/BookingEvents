@@ -1,4 +1,5 @@
 ﻿using EventBooking.API.Middleware;
+using EventBooking.Application.Auth;
 using EventBooking.Application.Bookings;
 using EventBooking.Application.Common.Interfaces;
 using EventBooking.Application.Events;
@@ -81,6 +82,8 @@ builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddHostedService<SeatHoldExpiryService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddSingleton<IMessageService, MessageService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 var app = builder.Build();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 

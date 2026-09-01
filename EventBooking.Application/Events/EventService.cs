@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EventBooking.Application.Events
 {
-    public class EventService(IApplicationDbContext _context) : IEventService
+    public class EventService(IApplicationDbContext _context, IMessageService _messages) : IEventService
     {
         
 
@@ -62,7 +62,7 @@ namespace EventBooking.Application.Events
 
             if (eventEntity is null)
             {
-                throw new NotFoundException("الحدث المطلوب غير موجود");
+                throw new NotFoundException(_messages.Get("EventNotFound"));
             }
 
             return eventEntity;

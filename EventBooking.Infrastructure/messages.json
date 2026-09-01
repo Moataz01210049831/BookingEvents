@@ -1,0 +1,13 @@
+{
+  "EventNotFound": "الحدث المطلوب غير موجود",
+  "InvalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+  "MustSelectAtLeastOneSeat": "لازم تختار مقعد واحد على الأقل",
+  "SeatsNotFound": "بعض المقاعد المطلوبة غير موجودة",
+  "SeatsNotAvailable": "بعض المقاعد المختارة لم تعد متاحة، من فضلك اختر مقاعد أخرى",
+  "SeatsFromDifferentEvents": "لا يمكن حجز مقاعد من فعاليات مختلفة في نفس العملية",
+  "ConcurrencyConflict": "للأسف بعض المقاعد تم حجزها للتو من مستخدم آخر، حاول تاني",
+  "BookingNotFound": "الحجز المطلوب غير موجود",
+  "NotYourBooking": "لا يمكنك تأكيد حجز لا يخصك",
+  "BookingNotPending": "لا يمكن تأكيد هذا الحجز",
+  "SeatsHoldExpired": "انتهت مهلة حجز بعض المقاعد، من فضلك أعد المحاولة"
+}
