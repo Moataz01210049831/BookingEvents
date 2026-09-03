@@ -51,5 +51,46 @@ namespace EventBooking.Application.Halls
                 LocationName = location.Name
             };
         }
+
+        public async Task<int> AddSeatsAsync(CreateSeatsRequest request)
+        {
+            var hallExists = await context.Halls.AnyAsync(h => h.Id == request.HallId);
+            if (!hallExists)
+            {
+                throw new NotFoundException(messages.Get("HallNotFound"));
+            }
+
+            var addedCount = 0;
+            foreach (var seatInput in request.Seats)
+            {
+                var alreadyExists = await context.Seats.AnyAsync(s =>
+                    s.HallId == request.HallId &&
+                    s.RowLabel == seatInput.RowLabel &&
+                    s.SeatNumber == seatInput.SeatNumber);
+
+                if (alreadyExists)
+                {
+                    continue; // تخطى المقعد ده، already موجود
+                }
+                var seatType = Enum.TryParse<SeatType>(seatInput.SeatType, out var parsed)
+                  ? parsed
+                  : SeatType.Regular;
+
+                context.Seats.Add(new Seat
+                {
+                    Id = Guid.NewGuid(),
+                    HallId = request.HallId,
+                    RowLabel = seatInput.RowLabel,
+                    SeatNumber = seatInput.SeatNumber,
+                    SeatType = seatType
+                });
+
+                addedCount++;
+            }
+
+            await context.SaveChangesAsync();
+
+            return addedCount;
+        }
     }
 }

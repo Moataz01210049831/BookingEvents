@@ -6,5 +6,7 @@ namespace EventBooking.Application.Halls
     {
         Task<List<HallDto>> GetAllAsync();
         Task<HallDto> CreateAsync(CreateHallRequest request);
+        Task<int> AddSeatsAsync(CreateSeatsRequest request);
+
     }
 }

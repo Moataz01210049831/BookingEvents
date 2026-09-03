@@ -23,5 +23,13 @@ namespace EventBooking.API.Controllers
             var hall = await hallService.CreateAsync(request);
             return Ok(hall);
         }
+
+        [HttpPost("seats")]
+        [Authorize(Roles = "Admin,Organizer")]
+        public async Task<IActionResult> AddSeats(CreateSeatsRequest request)
+        {
+            var addedCount = await hallService.AddSeatsAsync(request);
+            return Ok(new { addedCount });
+        }
     }
 }
